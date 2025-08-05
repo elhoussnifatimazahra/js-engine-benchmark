@@ -34,4 +34,4 @@ jobs:
 
       - name: Run hyperfine benchmark
         working-directory: quickjs4j-benchmark
-        run: hyperfine 'java -jar target/quickjs4j-benchmark.jar'
+        run: hyperfine --show-output 'java -jar target/quickjs4j-benchmark.jar'
