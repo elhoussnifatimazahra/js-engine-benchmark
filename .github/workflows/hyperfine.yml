@@ -33,7 +33,7 @@ jobs:
               
       - name: Run the Java app once (check output)
         working-directory: quickjs4j-benchmark
-        run: java -jar target/quickjs4j-benchmark.jar
+        run: java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
 
       - name: Install hyperfine
         run: |
@@ -42,4 +42,4 @@ jobs:
 
       - name: Run hyperfine benchmark
         working-directory: quickjs4j-benchmark
-        run: hyperfine --show-output 'java -jar target/quickjs4j-benchmark.jar'
+        run: hyperfine --show-output 'java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar'
