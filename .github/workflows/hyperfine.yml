@@ -26,7 +26,11 @@ jobs:
       - name: Build with Maven
         working-directory: quickjs4j-benchmark
         run: mvn clean package -DskipTests
-
+        
+      - name: List files in target
+        working-directory: quickjs4j-benchmark
+        run: ls -l target/
+              
       - name: Run the Java app once (check output)
         working-directory: quickjs4j-benchmark
         run: java -jar target/quickjs4j-benchmark.jar
