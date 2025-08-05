@@ -1,32 +1,40 @@
-name: 🧪 Benchmark QuickJS4J with Hyperfine
+name: Build and Benchmark QuickJS4J
 
 on:
   push:
-    branches: [ main ]
+    paths:
+      - 'quickjs4j-benchmark/**'
+      - '.github/workflows/quickjs4j-benchmark.yml'
   pull_request:
-    branches: [ main ]
+    paths:
+      - 'quickjs4j-benchmark/**'
+      - '.github/workflows/quickjs4j-benchmark.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  benchmark:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: 🧰 Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '24'
+    - name: Setup Java 24
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 24
 
-      - name: 📦 Install Hyperfine
-        run: sudo apt-get install -y hyperfine
+    - name: Build quickjs4j-benchmark module with Maven
+      run: mvn clean package -DskipTests -f quickjs4j-benchmark/pom.xml
 
-      - name: 🛠️ Build quickjs4j-benchmark
-        working-directory: quickjs4j-benchmark
-        run: mvn clean package -DskipTests
+    - name: Install hyperfine
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y hyperfine
 
-      - name: 🚀 Run Hyperfine benchmark
-        run: |
-          hyperfine 'java -jar quickjs4j-benchmark/target/quickjs4j-benchmark.jar'
+    - name: Run hyperfine benchmark on jar
+      run: hyperfine 'java -jar quickjs4j-benchmark/target/quickjs4j-benchmark.jar'
