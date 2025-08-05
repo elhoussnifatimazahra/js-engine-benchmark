@@ -30,13 +30,11 @@ js-engine-benchmark/
 
 The goal is to:
 - Evaluate and compare **execution performance**, **startup latency**, and **Java interop** between GraalJS and QuickJS4J.
-- Identify use cases where each engine performs better.
-
 ---
 
 ## Tools & Technologies
 
-- **Java 17**
+- **Java 24**
 - **JMH 1.37** – for microbenchmarking throughput (ops/ms)
 - **Hyperfine** – for measuring `java -jar` startup time
 - **QuickJS4J** – Java bindings for the QuickJS engine
@@ -116,25 +114,33 @@ hyperfine "java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar"
 ```
 
 ---
+## Performance Benchmark (JMH)
 
-## Benchmark Results
+| Benchmark Operation | QuickJS4J (ops/ms) | GraalJS (ops/ms)  |
+| ------------------- | ------------------ | ----------------- |
+| `benchmarkAdd`      | 5.505 ± 1.554      | 111.469 ± 620.471 |
+| `benchmarkMultiply` | 5.765 ± 0.795      | 148.780 ± 13.209  |
+| `benchmarkDivide`   | 5.621 ± 1.102      | 152.286 ± 25.850  |
 
-### JMH Throughput (ops/ms)
+> 🟢 **GraalJS outperforms QuickJS4J significantly** in throughput operations.
 
-| Operation        | QuickJS4J | GraalJS        |
-| ---------------- | --------- | -------------- |
-| `add(10, 20)`    | 5.52      | 65.80          |
-| `multiply(6, 7)` | 5.86      | 73.95          |
-| `divide(42, 6)`  | 5.55      | 31.21 (± high) |
+### 3. ⏱️ Startup Time (Hyperfine)
 
-### Startup Time (Hyperfine)
+| Engine    | Mean Time (s) |
+| --------- | ------------- |
+| QuickJS4J | 5.332 ± 0.017 |
+| GraalJS   | 0.776 ± 0.121 |
 
-| Engine    | Startup Time (avg) |
-| --------- | ------------------ |
-| QuickJS4J | \~301 ms           |
-| GraalJS   | \~591 ms           |
+> ⚡ **GraalJS starts \~7x faster** than QuickJS4J in this benchmark.
 
 ---
+## Conclusion
 
-## Analysis
+* **GraalJS** is **faster** and **more mature**, better suited for performance-critical Java+JS applications.
+* **QuickJS4J** provides a simpler and lighter interface, but suffers from **long startup times** and **lower throughput**.
+* The choice depends on your use case:
 
+    * 🔹 Use **QuickJS4J** for embedded/offline usage with minimal dependencies
+    * 🔹 Use **GraalJS** for scalable applications needing advanced JavaScript features and performance
+
+---
