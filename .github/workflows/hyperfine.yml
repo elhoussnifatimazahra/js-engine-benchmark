@@ -4,11 +4,11 @@ on:
   push:
     paths:
       - 'quickjs4j-benchmark/**'
-      - '.github/workflows/quickjs4j-benchmark.yml'
+      - '.github/workflows/hyperfine.yml'
   pull_request:
     paths:
       - 'quickjs4j-benchmark/**'
-      - '.github/workflows/quickjs4j-benchmark.yml'
+      - '.github/workflows/hyperfine.yml'
   workflow_dispatch:
 
 permissions:
