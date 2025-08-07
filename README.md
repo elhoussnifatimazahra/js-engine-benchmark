@@ -7,22 +7,6 @@ This project compares the performance and behavior of two JavaScript engines emb
 
 The comparison is done using **JMH (Java Microbenchmark Harness)** for throughput benchmarks and **Hyperfine** for measuring startup time.
 
----
-
-## Project Structure
-
-```
-
-js-engine-benchmark/
-├── graaljs-benchmark/        # GraalJS implementation and JMH benchmark
-├── quickjs4j-benchmark/      # QuickJS4J implementation and JMH benchmark
-├── docs/                     # Benchmark results and analysis
-│   ├── results-graaljs.txt
-│   ├── results-quickjs4j.txt
-│   
-└── README.md                 # This documentation
-
-````
 
 ---
 
