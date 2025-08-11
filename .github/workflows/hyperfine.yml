@@ -77,9 +77,15 @@ jobs:
         run: |
           java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar &
           pid=$!
-          sleep 5
-          sample $pid 5 > quickjs4j-benchmark-sample.txt
-          kill $pid
+          # Attendre que le process démarre
+          sleep 2
+          # Vérifier que le process est toujours vivant avant le profiling
+          if kill -0 $pid 2>/dev/null; then
+            sample $pid 5 > quickjs4j-benchmark-sample.txt
+            kill $pid
+          else
+            echo "Process $pid already exited before sampling."
+          fi
 
       - name: Upload sample profile artifact (macOS only)
         if: matrix.os == 'macos-latest'
