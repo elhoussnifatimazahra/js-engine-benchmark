@@ -29,7 +29,6 @@ jobs:
           distribution: temurin
           java-version: 24
 
-      # Build quickjs4j
       - name: Build quickjs4j-benchmark with Maven
         working-directory: quickjs4j-benchmark
         run: mvn clean package -DskipTests
@@ -38,7 +37,6 @@ jobs:
         working-directory: quickjs4j-benchmark
         run: ls -l target/
 
-      # Build graaljs
       - name: Build graaljs-benchmark with Maven
         working-directory: graaljs-benchmark
         run: mvn clean package -DskipTests
@@ -47,49 +45,45 @@ jobs:
         working-directory: graaljs-benchmark
         run: ls -l target/
 
-      # Run quickjs4j once to check output
       - name: Run quickjs4j-benchmark once
         working-directory: quickjs4j-benchmark
         run: java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
 
-      # Run graaljs once to check output
       - name: Run graaljs-benchmark once
         working-directory: graaljs-benchmark
         run: java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar
 
-      # Install hyperfine for benchmarking (Linux + macOS)
-      - name: Install hyperfine
+      - name: Install hyperfine (Linux + macOS)
         if: matrix.os != 'windows-latest'
         run: |
           sudo apt-get update || brew update
           sudo apt-get install -y hyperfine || brew install hyperfine
 
-      # Install hyperfine on Windows
       - name: Install hyperfine on Windows
         if: matrix.os == 'windows-latest'
         run: choco install hyperfine
 
-      # Benchmark quickjs4j
       - name: Benchmark quickjs4j-benchmark with hyperfine
         working-directory: quickjs4j-benchmark
         run: hyperfine --show-output 'java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar'
 
-      # Benchmark graaljs
       - name: Benchmark graaljs-benchmark with hyperfine
         working-directory: graaljs-benchmark
         run: hyperfine --show-output 'java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar'
 
-      # (Optional) Generate Instruments trace on macOS for analysis
-      - name: Generate Instruments trace on macOS
+      - name: Run sample profiler on macOS
         if: matrix.os == 'macos-latest'
         working-directory: quickjs4j-benchmark
         run: |
-          xcrun instruments -t "Time Profiler" -D quickjs4j-benchmark.trace -- java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
+          java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar &
+          pid=$!
+          sleep 5
+          sample $pid 5 > quickjs4j-benchmark-sample.txt
+          kill $pid
 
-      # Upload Instruments trace artifact on macOS for inspection
-      - name: Upload quickjs4j Instruments trace (macOS only)
+      - name: Upload sample profile artifact (macOS only)
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: quickjs4j-benchmark-trace
-          path: quickjs4j-benchmark/quickjs4j-benchmark.trace
+          name: quickjs4j-benchmark-sample
+          path: quickjs4j-benchmark/quickjs4j-benchmark-sample.txt
