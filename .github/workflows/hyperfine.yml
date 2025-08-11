@@ -63,9 +63,9 @@ jobs:
         run: |
           # Use `xcrun xctrace` to profile the quickjs4j benchmark and save the output.
           echo "Generating trace file for quickjs4j..."
-          # The `--working-directory` flag is crucial here to find the .jar file.
-          xcrun xctrace record --template 'Time Profile' --output './quickjs4j-benchmark.trace' -- java -jar quickjs4j-benchmark/target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
-        
+          # L'option `--launch` est ajoutée ici pour indiquer à xctrace de lancer la commande qui suit.
+          xcrun xctrace record --template 'Time Profile' --output './quickjs4j-benchmark.trace' --launch -- java -jar quickjs4j-benchmark/target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
+              
       - name: Upload quickjs4j trace file as artifact
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
