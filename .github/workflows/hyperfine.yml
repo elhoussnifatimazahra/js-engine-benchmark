@@ -79,8 +79,6 @@ jobs:
         working-directory: graaljs-benchmark
         run: hyperfine --show-output 'java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar'
 
-    
-
       - name: Generate and upload trace files (macOS only)
         if: matrix.os == 'macos-latest'
         run: |
@@ -93,7 +91,7 @@ jobs:
         
       - name: Upload .trace files as artifact
         if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: trace-files-macos
           path: |
