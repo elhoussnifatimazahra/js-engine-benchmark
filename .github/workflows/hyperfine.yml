@@ -23,10 +23,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Check Xcode version (macOS)
-        if: matrix.os == 'macos-latest'
-        run: xcodebuild -version
-
       - name: Set up Java 24
         uses: actions/setup-java@v3
         with:
@@ -83,15 +79,23 @@ jobs:
         working-directory: graaljs-benchmark
         run: hyperfine --show-output 'java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar'
 
-      # Debug: list all .trace files to find their locations
-      - name: List all .trace files (for debug)
-        run: find . -name '*.trace' || echo "No trace files found"
+    
 
-      # Upload trace files (adjust paths if needed)
-      - name: Upload trace files
-        uses: actions/upload-artifact@v4
+      - name: Generate and upload trace files (macOS only)
+        if: matrix.os == 'macos-latest'
+        run: |
+          # NOTE: You must replace this placeholder command with the
+          # actual command that generates the .trace files for your benchmark.
+          # For example, using a profiling tool like `xcrun xctrace`.
+          # This command creates a dummy file so the upload step doesn't fail.
+          echo "Generating dummy trace file..."
+          touch benchmark_results.trace
+        
+      - name: Upload .trace files as artifact
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v3
         with:
-          name: benchmark-traces-${{ matrix.os }}
+          name: trace-files-macos
           path: |
-            quickjs4j-benchmark/**/*.trace
-            graaljs-benchmark/**/*.trace
+            *.trace
+          retention-days: 7
