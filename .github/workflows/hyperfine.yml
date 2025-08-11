@@ -13,7 +13,11 @@ on:
 
 jobs:
   build-run-benchmark:
-    runs-on: ubuntu-latest
+    name: Benchmark on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - name: Checkout repository
@@ -53,11 +57,17 @@ jobs:
         working-directory: graaljs-benchmark
         run: java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar
 
-      # Install hyperfine for benchmarking
+      # Install hyperfine for benchmarking (Linux + macOS)
       - name: Install hyperfine
+        if: matrix.os != 'windows-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y hyperfine
+          sudo apt-get update || brew update
+          sudo apt-get install -y hyperfine || brew install hyperfine
+
+      # Install hyperfine on Windows
+      - name: Install hyperfine on Windows
+        if: matrix.os == 'windows-latest'
+        run: choco install hyperfine
 
       # Benchmark quickjs4j
       - name: Benchmark quickjs4j-benchmark with hyperfine
