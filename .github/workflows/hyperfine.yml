@@ -34,28 +34,11 @@ jobs:
         working-directory: quickjs4j-benchmark
         run: mvn clean package -DskipTests
 
-      - name: List files in quickjs4j-benchmark/target
-        working-directory: quickjs4j-benchmark
-        run: ls -l target/
-
       # Build graaljs
       - name: Build graaljs-benchmark with Maven
         working-directory: graaljs-benchmark
         run: mvn clean package -DskipTests
 
-      - name: List files in graaljs-benchmark/target
-        working-directory: graaljs-benchmark
-        run: ls -l target/
-
-      # Run quickjs4j once to check output
-      - name: Run quickjs4j-benchmark once
-        working-directory: quickjs4j-benchmark
-        run: java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
-
-      # Run graaljs once to check output
-      - name: Run graaljs-benchmark once
-        working-directory: graaljs-benchmark
-        run: java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar
 
       # Install hyperfine for benchmarking (Linux + macOS)
       - name: Install hyperfine
@@ -74,26 +57,19 @@ jobs:
         working-directory: quickjs4j-benchmark
         run: hyperfine --show-output 'java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar'
 
-      # Benchmark graaljs
-      - name: Benchmark graaljs-benchmark with hyperfine
-        working-directory: graaljs-benchmark
-        run: hyperfine --show-output 'java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar'
-
-      - name: Generate and upload trace files (macOS only)
+    
+      - name: Generate quickjs4j trace file (macOS only)
         if: matrix.os == 'macos-latest'
         run: |
-          # NOTE: You must replace this placeholder command with the
-          # actual command that generates the .trace files for your benchmark.
-          # For example, using a profiling tool like `xcrun xctrace`.
-          # This command creates a dummy file so the upload step doesn't fail.
-          echo "Generating dummy trace file..."
-          touch benchmark_results.trace
+          # Use `xcrun xctrace` to profile the quickjs4j benchmark and save the output.
+          echo "Generating trace file for quickjs4j..."
+          # The `--working-directory` flag is crucial here to find the .jar file.
+          xcrun xctrace record --template 'Time Profile' --output './quickjs4j-benchmark.trace' -- java -jar quickjs4j-benchmark/target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
         
-      - name: Upload .trace files as artifact
+      - name: Upload quickjs4j trace file as artifact
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: trace-files-macos
-          path: |
-            *.trace
+          name: quickjs4j-trace-macos
+          path: quickjs4j-benchmark.trace
           retention-days: 7
