@@ -23,6 +23,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Check Xcode version (macOS)
+        if: matrix.os == 'macos-latest'
+        run: xcodebuild -version
+
       - name: Set up Java 24
         uses: actions/setup-java@v3
         with:
@@ -78,3 +82,12 @@ jobs:
       - name: Benchmark graaljs-benchmark with hyperfine
         working-directory: graaljs-benchmark
         run: hyperfine --show-output 'java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar'
+
+      # Upload trace files (ajuste le chemin si nécessaire)
+      - name: Upload trace files
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-traces-${{ matrix.os }}
+          path: |
+            quickjs4j-benchmark/**/*.trace
+            graaljs-benchmark/**/*.trace
