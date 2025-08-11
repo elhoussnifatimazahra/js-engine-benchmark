@@ -34,11 +34,28 @@ jobs:
         working-directory: quickjs4j-benchmark
         run: mvn clean package -DskipTests
 
+      - name: List files in quickjs4j-benchmark/target
+        working-directory: quickjs4j-benchmark
+        run: ls -l target/
+
       # Build graaljs
       - name: Build graaljs-benchmark with Maven
         working-directory: graaljs-benchmark
         run: mvn clean package -DskipTests
 
+      - name: List files in graaljs-benchmark/target
+        working-directory: graaljs-benchmark
+        run: ls -l target/
+
+      # Run quickjs4j once to check output
+      - name: Run quickjs4j-benchmark once
+        working-directory: quickjs4j-benchmark
+        run: java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
+
+      # Run graaljs once to check output
+      - name: Run graaljs-benchmark once
+        working-directory: graaljs-benchmark
+        run: java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar
 
       # Install hyperfine for benchmarking (Linux + macOS)
       - name: Install hyperfine
@@ -57,15 +74,21 @@ jobs:
         working-directory: quickjs4j-benchmark
         run: hyperfine --show-output 'java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar'
 
-    
+      # Benchmark graaljs
+      - name: Benchmark graaljs-benchmark with hyperfine
+        working-directory: graaljs-benchmark
+        run: hyperfine --show-output 'java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar'
+
+      
+
       - name: Generate quickjs4j trace file (macOS only)
         if: matrix.os == 'macos-latest'
         run: |
           # Use `xcrun xctrace` to profile the quickjs4j benchmark and save the output.
           echo "Generating trace file for quickjs4j..."
           # L'option `--launch` est ajoutée ici pour indiquer à xctrace de lancer la commande qui suit.
-          xcrun xctrace record --template 'Time Profile' --output './quickjs4j-benchmark.trace' --launch -- java -jar quickjs4j-benchmark/target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
-              
+          xcrun xctrace record --template 'Time Profile' --output './quickjs4j-benchmark.trace' --launch -- "$JAVA_HOME/bin/java" -jar quickjs4j-benchmark/target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
+        
       - name: Upload quickjs4j trace file as artifact
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
