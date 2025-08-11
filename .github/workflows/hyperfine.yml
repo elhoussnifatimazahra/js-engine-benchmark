@@ -83,7 +83,11 @@ jobs:
         working-directory: graaljs-benchmark
         run: hyperfine --show-output 'java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar'
 
-      # Upload trace files (ajuste le chemin si nécessaire)
+      # Debug: list all .trace files to find their locations
+      - name: List all .trace files (for debug)
+        run: find . -name '*.trace' || echo "No trace files found"
+
+      # Upload trace files (adjust paths if needed)
       - name: Upload trace files
         uses: actions/upload-artifact@v4
         with:
