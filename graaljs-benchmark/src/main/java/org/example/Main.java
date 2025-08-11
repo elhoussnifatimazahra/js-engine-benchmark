@@ -40,11 +40,11 @@ public class Main {
             System.out.println("3 * 5 = " + calculator.multiply(3,5));
             System.out.println("10 / 2 = " + calculator.divide(10, 2));
 
-            try {
-                calculator.divide(10,0);
-            } catch (PolyglotException e) {
-                System.err.println("JavaScript Error: " + e.getMessage());
-            }
+            // try {
+            //     calculator.divide(10,0);
+            // } catch (PolyglotException e) {
+            //     System.err.println("JavaScript Error: " + e.getMessage());
+            // }
         }
     }
 }
