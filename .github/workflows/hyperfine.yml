@@ -57,6 +57,38 @@ jobs:
         working-directory: graaljs-benchmark
         run: java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar
 
+      # Run quickjs4j benchmark with Instruments trace (macOS only)
+      - name: Run quickjs4j-benchmark with Instruments trace (macOS only)
+        if: matrix.os == 'macos-latest'
+        working-directory: quickjs4j-benchmark
+        run: |
+          xcrun xctrace record --template "Time Profiler" --output quickjs4j-benchmark.trace -- \
+            java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
+
+      # Upload quickjs4j Instruments trace (macOS only)
+      - name: Upload quickjs4j Instruments trace (macOS only)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: quickjs4j-benchmark-trace
+          path: quickjs4j-benchmark/quickjs4j-benchmark.trace
+
+      # Run graaljs benchmark with Instruments trace (macOS only)
+      - name: Run graaljs-benchmark with Instruments trace (macOS only)
+        if: matrix.os == 'macos-latest'
+        working-directory: graaljs-benchmark
+        run: |
+          xcrun xctrace record --template "Time Profiler" --output graaljs-benchmark.trace -- \
+            java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar
+
+      # Upload graaljs Instruments trace (macOS only)
+      - name: Upload graaljs Instruments trace (macOS only)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: graaljs-benchmark-trace
+          path: graaljs-benchmark/graaljs-benchmark.trace
+
       # Install hyperfine for benchmarking (Linux + macOS)
       - name: Install hyperfine
         if: matrix.os != 'windows-latest'
