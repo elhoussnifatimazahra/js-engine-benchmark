@@ -49,16 +49,6 @@ jobs:
         working-directory: graaljs-benchmark
         run: ls -l target/
 
-      # Run quickjs4j once to check output
-      - name: Run quickjs4j-benchmark once
-        working-directory: quickjs4j-benchmark
-        run: java -jar target/quickjs4j-benchmark-1.0-SNAPSHOT.jar
-
-      # Run graaljs once to check output
-      - name: Run graaljs-benchmark once
-        working-directory: graaljs-benchmark
-        run: java -jar target/graaljs-benchmark-1.0-SNAPSHOT.jar
-
       # Install hyperfine for benchmarking (Linux + macOS)
       - name: Install hyperfine
         if: matrix.os != 'windows-latest'
